@@ -52,4 +52,6 @@ Mkfile.old
 dkms.conf
 
 # Project files
+.cache
 renderer
+compile_commands.json

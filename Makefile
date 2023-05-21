@@ -1,8 +1,24 @@
+###############################################################
+# Declare some Makefile variables
+###############################################################
+CC = cc
+LANG_STD = -std=c99
+COMPILER_FLAGS = -Wall
+SRC_FILES = src/*.c
+LINKER_FLAGS = `pkg-config --cflags --libs sdl2`
+OBJ_NAME = renderer
+
+
+###############################################################
+# Declare some Makefile rules
+###############################################################
 build:
-	zig cc -Wall -std=c99 ./src/*.c -o renderer
+	$(CC) $(COMPILER_FLAGS) $(LANG_STD) $(SRC_FILES) $(LINKER_FLAGS) -o $(OBJ_NAME)
 
 run:
-	./renderer
+	./$(OBJ_NAME)
 
 clean:
-	rm ./renderer
+	rm $(OBJ_NAME)
+
+all: clean build
