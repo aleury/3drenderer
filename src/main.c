@@ -20,6 +20,14 @@ bool initialize_window(void) {
         return false;
     }
 
+    // Use SDL to query what is the fullscreen max. width and height
+    SDL_DisplayMode display_mode;
+    SDL_GetCurrentDisplayMode(0, &display_mode);
+
+    window_width = display_mode.w;
+    window_height = display_mode.h;
+
+    // Create an SDL window
     window =
         SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                          window_width, window_height, SDL_WINDOW_BORDERLESS);
@@ -28,11 +36,14 @@ bool initialize_window(void) {
         return false;
     }
 
+    // Create an SDL renderer
     renderer = SDL_CreateRenderer(window, -1, 0);
     if (!renderer) {
         fprintf(stderr, "Error creating SDL renderer.\n");
         return false;
     }
+
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
     return true;
 }
@@ -47,6 +58,7 @@ void setup(void) {
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
                                              SDL_TEXTUREACCESS_STREAMING,
                                              window_width, window_height);
+    assert(color_buffer_texture);
 }
 
 void process_input(void) {
@@ -66,6 +78,28 @@ void process_input(void) {
 
 void update(void) {
     // TODO:
+}
+
+void draw_grid(void) {
+    // Draw a background grid that fills the entire window.
+    // Lines should be rendered at every row/col multiple of 10.
+    //
+    // +--+--+--+--+--+--+--+--+
+    // |  |  |  |  |  |  |  |  |
+    // +--+--+--+--+--+--+--+--+
+    // |  |  |  |  |  |  |  |  |
+    // +--+--+--+--+--+--+--+--+
+    // |  |  |  |  |  |  |  |  |
+    // +--+--+--+--+--+--+--+--+
+    // |  |  |  |  |  |  |  |  |
+    // +--+--+--+--+--+--+--+--+
+    uint32_t grid_color = 0xFF333333;
+
+    for (int y = 0; y < window_height; y += 10) {
+        for (int x = 0; x < window_width; x += 10) {
+            color_buffer[(window_width * y) + x] = grid_color;
+        }
+    }
 }
 
 void render_color_buffer(void) {
@@ -92,7 +126,8 @@ void render(void) {
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    clear_color_buffer(0xFFFFFF00);
+    clear_color_buffer(0xFF000000);
+    draw_grid();
     render_color_buffer();
 
     // Display the backbuffer
