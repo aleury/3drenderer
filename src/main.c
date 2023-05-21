@@ -80,6 +80,16 @@ void update(void) {
     // TODO:
 }
 
+void draw_rect(int x, int y, int width, int height, uint32_t color) {
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < height; j++) {
+            int current_x = x + i;
+            int current_y = y + j;
+            color_buffer[(window_width * current_y) + current_x] = color;
+        }
+    }
+}
+
 void draw_grid(void) {
     // Draw a background grid that fills the entire window.
     // Lines should be rendered at every row/col multiple of 10.
@@ -126,9 +136,12 @@ void render(void) {
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    clear_color_buffer(0xFF000000);
     draw_grid();
+
+    draw_rect(300, 200, 300, 150, 0xFFFF00FF);
+
     render_color_buffer();
+    clear_color_buffer(0xFF000000);
 
     // Display the backbuffer
     SDL_RenderPresent(renderer);
