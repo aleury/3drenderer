@@ -34,8 +34,14 @@ bool initialize_window(void) {
     return true;
 }
 
+bool in_bounds(int x, int y) {
+    bool x_in_bounds = x >= 0 && x < window_width;
+    bool y_in_bounds = y >= 0 && y < window_height;
+    return x_in_bounds && y_in_bounds;
+}
+
 void draw_pixel(int x, int y, uint32_t color) {
-    if (x < window_width && y < window_height) {
+    if (in_bounds(x, y)) {
         color_buffer[(window_width * y) + x] = color;
     }
 }
