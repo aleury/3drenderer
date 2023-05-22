@@ -1,4 +1,5 @@
 #include "display.h"
+#include "vector.h"
 #include <SDL2/SDL.h>
 #include <assert.h>
 #include <stdbool.h>
