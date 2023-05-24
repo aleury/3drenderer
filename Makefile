@@ -5,7 +5,7 @@ CC = cc
 LANG_STD = -std=c99
 COMPILER_FLAGS = -Wall
 SRC_FILES = src/*.c
-LINKER_FLAGS = `pkg-config --cflags --libs sdl2`
+LINKER_FLAGS = -lm `pkg-config --cflags --libs sdl2`
 OBJ_NAME = renderer
 
 
