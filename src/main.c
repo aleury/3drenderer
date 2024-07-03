@@ -1,13 +1,15 @@
-#include "display.h"
-#include "vector.h"
 #include <SDL2/SDL.h>
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "SDL_timer.h"
+#include "display.h"
+#include "vector.h"
+
 // Delcare an array of vectors/points
-const int N_POINTS = 9 * 9 * 9; // 729 points
-vec3_t cube_points[N_POINTS];   // 9x9x9 cube
+const int N_POINTS = 9 * 9 * 9;  // 729 points
+vec3_t cube_points[N_POINTS];    // 9x9x9 cube
 vec2_t projected_points[N_POINTS];
 
 vec3_t camera_position = {.x = 0, .y = 0, .z = -5};
@@ -16,6 +18,7 @@ vec3_t cube_rotation = {.x = 0, .y = 0, .z = 0};
 float fov_factor = 640;
 
 bool is_running = false;
+int previous_frame_time = 0;
 
 int window_width = 800;
 int window_height = 600;
@@ -28,8 +31,7 @@ SDL_Texture *color_buffer_texture = NULL;
 
 void setup(void) {
     // Allocate the require memory in bytes to hold the color buffer
-    color_buffer =
-        (uint32_t *)malloc(sizeof(uint32_t) * window_width * window_height);
+    color_buffer = (uint32_t *)malloc(sizeof(uint32_t) * window_width * window_height);
     assert(color_buffer);
 
     // Create an SDL Texture that is used to display the color buffer
@@ -56,13 +58,13 @@ void process_input(void) {
     SDL_PollEvent(&event);
 
     switch (event.type) {
-    case SDL_QUIT:
-        is_running = false;
-        break;
-    case SDL_KEYDOWN:
-        if (event.key.keysym.sym == SDLK_ESCAPE)
+        case SDL_QUIT:
             is_running = false;
-        break;
+            break;
+        case SDL_KEYDOWN:
+            if (event.key.keysym.sym == SDLK_ESCAPE)
+                is_running = false;
+            break;
     }
 }
 
@@ -78,6 +80,16 @@ vec2_t project(vec3_t point) {
 }
 
 void update(void) {
+    // Wait some time until we reach the target frame time in milliseconds
+    int time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - previous_frame_time);
+
+    // Only delay execution if we're running too fast.
+    if (time_to_wait > 0 && time_to_wait <= FRAME_TARGET_TIME) {
+        SDL_Delay(time_to_wait);
+    }
+
+    previous_frame_time = SDL_GetTicks();
+
     cube_rotation.x += 0.01;
     cube_rotation.y += 0.01;
     cube_rotation.z += 0.01;
